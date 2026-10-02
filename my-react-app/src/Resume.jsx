@@ -60,3 +60,16 @@ export function ContactMe() {
   );
 }
 
+export function Resume() {
+  return (
+    <div className="resume">
+      <Header />
+      <Summary />
+      <Experience />
+      <Education />
+      <Skills />
+      <ContactMe />
+    </div>
+  );
+}
+
