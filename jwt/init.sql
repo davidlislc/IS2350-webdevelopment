@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Optional: Insert a sample user (Password here should ideally be hashed in a real application)
 INSERT INTO users (fullname, username, password, role) 
-VALUES ('John Doe', 'johndoe', 'secure_password_hash', 'ADMIN');
+VALUES ('John Doe', 'user1', 'password1', 'role');
