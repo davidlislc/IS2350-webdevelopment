@@ -7,31 +7,36 @@ app.use(bodyParser.json());
 
 const JWT_SECRET = '1600ewashingtonblvdZollner';
 // Sample user database
-const users = [
-  { id: 1, username: 'user1', password: 'password1', role: 'user' }
-];
-
+//connection to db
 let con = mysql.createConnection({
   host: "localhost",
-  user: "root",
-  password: "root_password"
+  user: "db_user",
+  password: "user_password",
+  database: "my_database"
 });
-
+//established connection-
+con.connect(function (err) {
+    if (err) throw err;
+    console.log("Connected!");
+});
 
 // Login route - generate token
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
-  // Find user
-  const user = users.find(u => u.username === username && u.password === password);
-  con.connect(function (err) {
-    if (err) throw err;
-    console.log("Connected!");
-  });
+  //query to find user in the database
+    const sql = "SELECT * FROM users WHERE username = ? AND password = ?";
 
-  if (!user) {
-    return res.status(401).json({ message: 'Invalid credentials' });
-  }
+    con.query(sql, [username, password], (err, results) => {
+        if (err) {
+            return res.status(500).json({ message: 'Database error' });
+        }
+
+        if (results.length === 0) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        const user = results[0];
 
   // Create payload for JWT
   const payload = {
@@ -44,6 +49,7 @@ app.post('/login', (req, res) => {
   const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
 
   res.json({ message: 'Login successful', token });
+});
 });
 
 // Middleware for JWT verification
