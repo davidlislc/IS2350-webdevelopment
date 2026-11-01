@@ -6,44 +6,54 @@ const app = express();
 app.use(bodyParser.json());
 
 const JWT_SECRET = '1600ewashingtonblvdZollner';
-// Sample user database
-const users = [
-  { id: 1, username: 'user1', password: 'password1', role: 'user' }
-];
 
+// Connect to the MySQL database created by docker-compose.yml
 let con = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "root_password"
+  password: "root_password",
+  database: "my_database"
+});
+
+// Connect once when the server starts
+con.connect(function (err) {
+  if (err) throw err;
+  console.log("Connected!");
 });
 
 
-// Login route - generate token
+// Login route - check the users table, then generate token
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
-  // Find user
-  const user = users.find(u => u.username === username && u.password === password);
-  con.connect(function (err) {
-    if (err) throw err;
-    console.log("Connected!");
+  // Look up the user in the users table (? placeholders prevent SQL injection)
+  const sql = 'SELECT id, username, role FROM users WHERE username = ? AND password = ?';
+
+  con.query(sql, [username, password], function (err, results) {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ message: 'Database error' });
+    }
+
+    // No matching row means the credentials are wrong
+    if (results.length === 0) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const user = results[0];
+
+    // Create payload for JWT
+    const payload = {
+      id: user.id,
+      username: user.username,
+      role: user.role
+    };
+
+    // Sign token
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+
+    res.json({ message: 'Login successful', token });
   });
-
-  if (!user) {
-    return res.status(401).json({ message: 'Invalid credentials' });
-  }
-
-  // Create payload for JWT
-  const payload = {
-    id: user.id,
-    username: user.username,
-    role: user.role
-  };
-
-  // Sign token
-  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
-
-  res.json({ message: 'Login successful', token });
 });
 
 // Middleware for JWT verification
