@@ -6,44 +6,65 @@ const app = express();
 app.use(bodyParser.json());
 
 const JWT_SECRET = '1600ewashingtonblvdZollner';
-// Sample user database
-const users = [
-  { id: 1, username: 'user1', password: 'password1', role: 'user' }
-];
 
-let con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "root_password"
-});
+// Connection pool to the MySQL database provided by docker-compose.yml
+// (a pool reconnects automatically and handles concurrent requests)
+const pool = mysql.createPool({
+  host: process.env.DB_HOST || "localhost",
+  port: process.env.DB_PORT || 3306,
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "root_password",
+  database: process.env.DB_NAME || "my_database",
+  waitForConnections: true,
+  connectionLimit: 10
+}).promise();
+
+// Verify the database connection at startup
+pool.getConnection()
+  .then(conn => {
+    console.log("Connected to MySQL!");
+    conn.release();
+  })
+  .catch(err => console.error("MySQL connection failed:", err.message));
 
 
-// Login route - generate token
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
+// Login route - authenticate against the users table, then generate token
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body || {};
 
-  // Find user
-  const user = users.find(u => u.username === username && u.password === password);
-  con.connect(function (err) {
-    if (err) throw err;
-    console.log("Connected!");
-  });
-
-  if (!user) {
-    return res.status(401).json({ message: 'Invalid credentials' });
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Username and password are required' });
   }
 
-  // Create payload for JWT
-  const payload = {
-    id: user.id,
-    username: user.username,
-    role: user.role
-  };
+  try {
+    // Parameterized query (? placeholders) prevents SQL injection
+    const [rows] = await pool.query(
+      'SELECT id, fullname, username, role FROM users WHERE username = ? AND password = ? LIMIT 1',
+      [username, password]
+    );
 
-  // Sign token
-  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+    if (rows.length === 0) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
 
-  res.json({ message: 'Login successful', token });
+    const user = rows[0];
+
+    // Create payload for JWT
+    const payload = {
+      id: user.id,
+      username: user.username,
+      fullname: user.fullname,
+      role: user.role
+    };
+
+    // Sign token
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+
+    res.json({ message: 'Login successful', token });
+  } catch (err) {
+    console.error('Database error:', err.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 // Middleware for JWT verification
