@@ -1,104 +1,88 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
-const bodyParser = require('body-parser');
 const mysql = require('mysql2');
+const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const app = express();
 
+const app = express();
+app.use(express.json());
+app.use(cors());
 
 // Enable CORS for your frontend origin
 app.use(cors({
-  origin: 'http://localhost:3000', // Match your frontend URL exactly
-  credentials: true,               // Allow cookies/authorization headers if needed
+    origin: 'http://localhost:3000', // Match your frontend URL exactly
+    credentials: true                // Allow cookies/authorization headers if needed
 }));
-app.use(bodyParser.json());
 
-const JWT_SECRET = '1600ewashingtonblvdZollner';
-// Sample user database
-const users = [
-  { id: 1, username: 'user1', password: 'password1', role: 'user' }
-];
+const JWT_SECRET = 'your_secret_key'; // Replace or use process.env if needed
 
-let con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "root_password"
+// Create database connection
+const db = mysql.createConnection({
+    host: 'localhost',
+    user: 'db_user',
+    password: 'user_password',
+    database: 'my_database'
 });
 
+db.connect((err) => {
+    if (err) {
+        console.error('Database connection failed:', err);
+        return;
+    }
+    console.log('Connected to MySQL database!');
+});
 
-// Login route - generate token
+// Login route - query MySQL database
 app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-
-  // Find user
-  const user = users.find(u => u.username === username && u.password === password);
-  con.connect(function (err) {
-    if (err) throw err;
-    console.log("Connected!");
-  });
-
-  if (!user) {
-    return res.status(401).json({ message: 'Invalid credentials' });
-  }
-
-  // Create payload for JWT
-  const payload = {
-    id: user.id,
-    username: user.username,
-    role: user.role
-  };
-
-  // Sign token
-  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
-
-  res.json({ message: 'Login successful', token });
+    const { username, password } = req.body;
+    
+    const query = 'SELECT * FROM users WHERE username = ? AND password = ?';
+    
+    db.query(query, [username, password], (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: 'Database error' });
+        }
+        
+        if (results.length > 0) {
+            const user = results[0];
+            
+            const payload = {
+                id: user.id,
+                username: user.username,
+                role: user.role
+            };
+            
+            const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+            
+            return res.json({ message: 'Login successful', token });
+        } else {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+    });
 });
 
 // Middleware for JWT verification
 const authenticateJWT = (req, res, next) => {
-  // Get auth header - The Authorization header is commonly used to send authentication tokens
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader) {
-    return res.status(401).json({ message: 'Authorization header missing' });
-  }
-
-  // Extract token from "Bearer <token>"
-  const token = authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ message: 'Token missing' });
-  }
-
-  try {
-    // Verify token
-    const decoded = jwt.verify(token, JWT_SECRET);
-
-    // Attach user to request
-    req.user = decoded;
-
-    next();
-  } catch (error) {
-    return res.status(403).json({ message: 'Invalid or expired token' });
-  }
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader) {
+        return res.status(401).json({ message: 'Authorization header missing' });
+    }
+    
+    const token = authHeader.split(' ')[1];
+    
+    if (!token) {
+        return res.status(401).json({ message: 'Token missing' });
+    }
+    
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) {
+            return res.status(403).json({ message: 'Invalid token' });
+        }
+        req.user = user;
+        next();
+    });
 };
 
-// Protected route
-app.get('/profile', authenticateJWT, (req, res) => {
-  res.json({ message: 'Profile accessed', user: req.user });
-});
-
-// Role-based route
-app.get('/admin', authenticateJWT, (req, res) => {
-  // Check if user has admin role
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ message: 'Access denied: admin role required' });
-  }
-
-  res.json({ message: 'Admin panel accessed' });
-});
-
-// Start server
-app.listen(8080, () => {
-  console.log('Server running on port 8080');
+app.listen(3000, () => {
+    console.log('Server running on port 3000');
 });
