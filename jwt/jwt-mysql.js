@@ -2,7 +2,15 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
+const cors = require('cors');
 const app = express();
+
+
+// Enable CORS for your frontend origin
+app.use(cors({
+  origin: 'http://localhost:3000', // Match your frontend URL exactly
+  credentials: true,               // Allow cookies/authorization headers if needed
+}));
 app.use(bodyParser.json());
 
 const JWT_SECRET = '1600ewashingtonblvdZollner';
