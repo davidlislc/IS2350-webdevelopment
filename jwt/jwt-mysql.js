@@ -1,9 +1,17 @@
 const express = require('express');
 const mysql = require('mysql2');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
+app.use(cors());
+
+// Enable CORS for your frontend origin
+app.use(cors({
+    origin: 'http://localhost:3000', // Match your frontend URL exactly
+    credentials: true                // Allow cookies/authorization headers if needed
+}));
 
 const JWT_SECRET = 'your_secret_key'; // Replace or use process.env if needed
 
