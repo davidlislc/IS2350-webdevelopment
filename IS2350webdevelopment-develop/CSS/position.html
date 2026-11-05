@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Position Types Interactive Playground</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .playground-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            max-width: 1150px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Controls Panel */
+        .controls {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            flex: 1;
+            min-width: 320px;
+            max-width: 420px;
+        }
+
+        .control-section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .control-section h3 {
+            margin: 0 0 12px 0;
+            font-size: 15px;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .control-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        select, input[type="range"] {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            background-color: #fafafa;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .checkbox-group input {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .info-box {
+            background-color: #eef6fc;
+            border-left: 4px solid #3498db;
+            padding: 10px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #2c3e50;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+
+        /* Visualizer Panel */
+        .visualizer-wrapper {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            flex: 1.5;
+            min-width: 380px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .scroll-viewport {
+            height: 380px;
+            border: 2px dashed #bdc3c7;
+            border-radius: 8px;
+            overflow-y: scroll;
+            background-color: #f9fbfd;
+            position: relative;
+            padding: 15px;
+        }
+
+        .parent-container {
+            background-color: #e3e8ee;
+            border: 2px dashed #7f8c8d;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 250px;
+            position: static; /* Toggled dynamically */
+            transition: border 0.2s;
+        }
+
+        .parent-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .static-box {
+            background-color: #bdc3c7;
+            color: #2c3e50;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        /* Target Element */
+        .target-element {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4);
+            position: static;
+            z-index: 10;
+            transition: position 0.1s;
+            text-align: center;
+        }
+
+        .scroll-buffer {
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 13px;
+            font-style: italic;
+            border-top: 1px dashed #ddd;
+            margin-top: 20px;
+        }
+
+        /* Code Output Area */
+        .code-output {
+            margin-top: 20px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .code-keyword { color: #569cd6; }
+        .code-prop { color: #9cdcfe; }
+        .code-val { color: #ce9178; }
+    </style>
+</head>
+<body>
+
+    <h1>CSS Positioning Playground</h1>
+
+    <div class="playground-container">
+        
+        <!-- Controls Sidebar -->
+        <div class="controls">
+            
+            <div class="control-section">
+                <h3>Target Element CSS</h3>
+                
+                <div class="control-group">
+                    <label for="posType">position</label>
+                    <select id="posType">
+                        <option value="static" selected>static</option>
+                        <option value="relative">relative</option>
+                        <option value="absolute">absolute</option>
+                        <option value="fixed">fixed</option>
+                        <option value="sticky">sticky</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>top: <span id="topVal">0px</span></label>
+                    <input type="range" id="offTop" min="-50" max="150" value="0">
+                </div>
+
+                <div class="control-group">
+                    <label>left: <span id="leftVal">0px</span></label>
+                    <input type="range" id="offLeft" min="-50" max="150" value="0">
+                </div>
+
+                <div id="infoBox" class="info-box">
+                    <strong>static:</strong> Standard layout flow. Offset properties (top, left) have no effect.
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Parent Container Context</h3>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="parentRelative">
+                    <label for="parentRelative">Set Parent to <code>position: relative</code></label>
+                </div>
+                <div style="font-size: 11px; color: #777; margin-top: 4px;">
+                    Determines if <code>absolute</code> positions relative to this parent box or the scroll viewport.
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Visualizer Area -->
+        <div class="visualizer-wrapper">
+            
+            <div class="scroll-viewport" id="viewport">
+                
+                <div class="parent-container" id="parentBox">
+                    <div class="parent-label" id="parentLabel">Parent Box (position: static)</div>
+                    
+                    <div class="static-box">Static Sibling Box A</div>
+                    
+                    <div class="target-element" id="targetEl">
+                        TARGET ELEMENT
+                    </div>
+                    
+                    <div class="static-box" style="margin-top: 10px;">Static Sibling Box B</div>
+                </div>
+
+                <div class="scroll-buffer">
+                    ↓↓ Scroll down to test sticky and fixed behavior ↓↓
+                </div>
+
+            </div>
+
+            <!-- Code Output View -->
+            <div class="code-output">
+                <div><span class="code-keyword">.parent-container</span> {</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">position</span>: <span class="code-val" id="cssParentPos">static</span>;</div>
+                <div>}</div>
+                <br>
+                <div><span class="code-keyword">.target-element</span> {</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">position</span>: <span class="code-val" id="cssPos">static</span>;</div>
+                <div id="cssOffsetsDisplay">&nbsp;&nbsp;<span class="code-prop">top</span>: <span class="code-val" id="cssTop">0px</span>;<br>&nbsp;&nbsp;<span class="code-prop">left</span>: <span class="code-val" id="cssLeft">0px</span>;</div>
+                <div>}</div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // DOM Elements
+        const posType = document.getElementById('posType');
+        const offTop = document.getElementById('offTop');
+        const offLeft = document.getElementById('offLeft');
+        const topVal = document.getElementById('topVal');
+        const leftVal = document.getElementById('leftVal');
+        const parentRelative = document.getElementById('parentRelative');
+        
+        const targetEl = document.getElementById('targetEl');
+        const parentBox = document.getElementById('parentBox');
+        const parentLabel = document.getElementById('parentLabel');
+        const infoBox = document.getElementById('infoBox');
+
+        const cssPos = document.getElementById('cssPos');
+        const cssTop = document.getElementById('cssTop');
+        const cssLeft = document.getElementById('cssLeft');
+        const cssParentPos = document.getElementById('cssParentPos');
+        const cssOffsetsDisplay = document.getElementById('cssOffsetsDisplay');
+
+        const descriptions = {
+            static: "<strong>static:</strong> Standard layout flow. Offset properties (top, left) are ignored completely.",
+            relative: "<strong>relative:</strong> Remains in normal document flow. Offsets shift it relative to its <em>original position</em> without moving surrounding elements.",
+            absolute: "<strong>absolute:</strong> Removed from normal flow. Positioned relative to its <em>closest non-static ancestor</em> (Parent Box).",
+            fixed: "<strong>fixed:</strong> Removed from flow. Anchored directly relative to the <em>scroll viewport window</em>.",
+            sticky: "<strong>sticky:</strong> Toggles between relative and fixed based on scroll position. Acts relative until reaching the specified offset."
+        };
+
+        function updatePlayground() {
+            const selectedPos = posType.value;
+            const tVal = `${offTop.value}px`;
+            const lVal = `${offLeft.value}px`;
+
+            // Apply Target Styling
+            targetEl.style.position = selectedPos;
+            targetEl.style.top = tVal;
+            targetEl.style.left = lVal;
+
+            // Apply Parent Container Styling
+            if (parentRelative.checked) {
+                parentBox.style.position = 'relative';
+                parentLabel.textContent = 'Parent Box (position: relative)';
+                cssParentPos.textContent = 'relative';
+            } else {
+                parentBox.style.position = 'static';
+                parentLabel.textContent = 'Parent Box (position: static)';
+                cssParentPos.textContent = 'static';
+            }
+
+            // Update Label Readouts
+            topVal.textContent = tVal;
+            leftVal.textContent = lVal;
+
+            // Update Code Output View
+            cssPos.textContent = selectedPos;
+            cssTop.textContent = tVal;
+            cssLeft.textContent = lVal;
+
+            // Hide/Show offset code display for static
+            if (selectedPos === 'static') {
+                cssOffsetsDisplay.style.opacity = '0.4';
+            } else {
+                cssOffsetsDisplay.style.opacity = '1';
+            }
+
+            // Update Info Box Description
+            infoBox.innerHTML = descriptions[selectedPos];
+        }
+
+        // Event Listeners
+        posType.addEventListener('change', updatePlayground);
+        offTop.addEventListener('input', updatePlayground);
+        offLeft.addEventListener('input', updatePlayground);
+        parentRelative.addEventListener('change', updatePlayground);
+
+        // Initial Setup
+        updatePlayground();
+    </script>
+</body>
+</html>

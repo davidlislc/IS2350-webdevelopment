@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JS Tutorial - Form & DOM Demo</title>
+</head>
+<body>
+
+  <h1 id="title">User Registration</h1>
+  
+  <form id="userForm">
+    <label for="usernameInput">Username:</label>
+    <input type="text" id="usernameInput" placeholder="Enter username..." required>
+    
+    <button type="submit" id="submitBtn">Submit</button>
+  </form>
+
+  <p id="outputMessage"></p>
+
+  <script>
+    // Log DOM initialization
+    document.addEventListener("DOMContentLoaded", function() {
+      console.log("DOM fully loaded and parsed.");
+    });
+
+    // 1. Query DOM elements
+    const form = document.getElementById("userForm");
+    const usernameInput = document.getElementById("usernameInput");
+    const outputMessage = document.getElementById("outputMessage");
+
+    // 2. Live input logging
+    usernameInput.addEventListener("input", function(event) {
+      console.log("User typing:", event.target.value);
+    });
+
+    // 3. Handle Form Submission
+    form.addEventListener("submit", function(event) {
+      // Prevent browser page refresh
+      event.preventDefault();
+
+      // Read value from input element
+      const username = usernameInput.value;
+      console.log("Form submitted with value:", username);
+
+      // Modify output message text, color, and size
+      outputMessage.textContent = "Registration successful for " + username + "!";
+      outputMessage.style.color = "green";
+      outputMessage.style.fontSize = "20px";
+
+      // Reset form input
+      form.reset();
+    });
+  </script>
+
+</body>
+</html>

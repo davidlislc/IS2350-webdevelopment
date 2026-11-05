@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Grid Interactive Playground</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .playground-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            max-width: 1150px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Controls Panel */
+        .controls {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            flex: 1;
+            min-width: 320px;
+            max-width: 420px;
+        }
+
+        .control-section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .control-section h3 {
+            margin: 0 0 12px 0;
+            font-size: 15px;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .control-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        select, input[type="text"], input[type="range"] {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            background-color: #fafafa;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            background-color: #27ae60;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #219150;
+        }
+
+        button.remove-btn {
+            background-color: #e74c3c;
+        }
+
+        button.remove-btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* Visualizer Panel */
+        .visualizer-wrapper {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            flex: 1.5;
+            min-width: 380px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .canvas-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .canvas-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        /* Grid Container Visual Area */
+        .grid-container {
+            background-color: #2c3e50;
+            border: 3px dashed #34495e;
+            border-radius: 8px;
+            min-height: 360px;
+            padding: 15px;
+            display: grid;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        /* Grid Items */
+        .grid-item {
+            background: linear-gradient(135deg, #16a085, #27ae60);
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            border-radius: 6px;
+            padding: 15px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 2px solid transparent;
+        }
+
+        .grid-item.selected {
+            border-color: #f1c40f;
+            box-shadow: 0 0 12px rgba(241, 196, 15, 0.8);
+            transform: scale(1.02);
+            z-index: 2;
+        }
+
+        /* Code Output Area */
+        .code-output {
+            margin-top: 20px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .code-keyword { color: #569cd6; }
+        .code-prop { color: #9cdcfe; }
+        .code-val { color: #ce9178; }
+    </style>
+</head>
+<body>
+
+    <h1>CSS Grid Layout Playground</h1>
+
+    <div class="playground-container">
+        
+        <!-- Controls Sidebar -->
+        <div class="controls">
+            
+            <!-- Container Controls -->
+            <div class="control-section">
+                <h3>Container Properties</h3>
+                
+                <div class="control-group">
+                    <label for="gridColumns">grid-template-columns</label>
+                    <select id="gridColumns">
+                        <option value="repeat(3, 1fr)" selected>repeat(3, 1fr)</option>
+                        <option value="repeat(2, 1fr)">repeat(2, 1fr)</option>
+                        <option value="repeat(4, 1fr)">repeat(4, 1fr)</option>
+                        <option value="100px 1fr 2fr">100px 1fr 2fr</option>
+                        <option value="1fr 2fr">1fr 2fr</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="gridRows">grid-template-rows</label>
+                    <select id="gridRows">
+                        <option value="auto" selected>auto (default)</option>
+                        <option value="repeat(2, 100px)">repeat(2, 100px)</option>
+                        <option value="repeat(3, 80px)">repeat(3, 80px)</option>
+                        <option value="80px 120px 80px">80px 120px 80px</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>gap: <span id="gapVal">15px</span></label>
+                    <input type="range" id="gridGap" min="0" max="40" value="15">
+                </div>
+
+                <div class="control-group">
+                    <label for="justifyItems">justify-items (Horizontal Alignment)</label>
+                    <select id="justifyItems">
+                        <option value="stretch" selected>stretch</option>
+                        <option value="start">start</option>
+                        <option value="end">end</option>
+                        <option value="center">center</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="alignItems">align-items (Vertical Alignment)</label>
+                    <select id="alignItems">
+                        <option value="stretch" selected>stretch</option>
+                        <option value="start">start</option>
+                        <option value="end">end</option>
+                        <option value="center">center</option>
+                    </select>
+                </div>
+
+                <div class="btn-group">
+                    <button id="addItemBtn">+ Add Item</button>
+                    <button id="removeItemBtn" class="remove-btn">- Remove</button>
+                </div>
+            </div>
+
+            <!-- Item Specific Controls -->
+            <div class="control-section">
+                <h3>Selected Item Props (<span id="selectedItemLabel">Item 1</span>)</h3>
+                <p style="font-size: 11px; color: #777; margin-top: -8px;">Click any item on the right to position it in the 2D grid.</p>
+
+                <div class="control-group">
+                    <label for="gridColumnSpan">grid-column (Span / Placement)</label>
+                    <select id="gridColumnSpan">
+                        <option value="auto" selected>auto</option>
+                        <option value="span 2">span 2</option>
+                        <option value="span 3">span 3</option>
+                        <option value="1 / -1">1 / -1 (Full Row Width)</option>
+                        <option value="1 / 3">1 / 3 (Lines 1 to 3)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="gridRowSpan">grid-row (Span / Placement)</label>
+                    <select id="gridRowSpan">
+                        <option value="auto" selected>auto</option>
+                        <option value="span 2">span 2</option>
+                        <option value="span 3">span 3</option>
+                        <option value="1 / 3">1 / 3 (Lines 1 to 3)</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Interactive Canvas -->
+        <div class="visualizer-wrapper">
+            <div class="canvas-header">
+                <h3>Grid Container Visualizer</h3>
+            </div>
+
+            <div id="gridContainer" class="grid-container">
+                <div class="grid-item selected" data-id="1">1</div>
+                <div class="grid-item" data-id="2">2</div>
+                <div class="grid-item" data-id="3">3</div>
+                <div class="grid-item" data-id="4">4</div>
+                <div class="grid-item" data-id="5">5</div>
+                <div class="grid-item" data-id="6">6</div>
+            </div>
+
+            <!-- Generated CSS View -->
+            <div class="code-output">
+                <div><span class="code-keyword">.grid-container</span> {</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">display</span>: <span class="code-val">grid</span>;</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">grid-template-columns</span>: <span class="code-val" id="cssColumns">repeat(3, 1fr)</span>;</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">grid-template-rows</span>: <span class="code-val" id="cssRows">auto</span>;</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">gap</span>: <span class="code-val" id="cssGap">15px</span>;</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">justify-items</span>: <span class="code-val" id="cssJustify">stretch</span>;</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">align-items</span>: <span class="code-val" id="cssAlign">stretch</span>;</div>
+                <div>}</div>
+                <br>
+                <div><span class="code-keyword">.selected-item</span> {</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">grid-column</span>: <span class="code-val" id="cssColSpan">auto</span>;</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">grid-row</span>: <span class="code-val" id="cssRowSpan">auto</span>;</div>
+                <div>}</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // DOM Elements
+        const gridContainer = document.getElementById('gridContainer');
+        const gridColumns = document.getElementById('gridColumns');
+        const gridRows = document.getElementById('gridRows');
+        const gridGap = document.getElementById('gridGap');
+        const gapVal = document.getElementById('gapVal');
+        const justifyItems = document.getElementById('justifyItems');
+        const alignItems = document.getElementById('alignItems');
+
+        const gridColumnSpan = document.getElementById('gridColumnSpan');
+        const gridRowSpan = document.getElementById('gridRowSpan');
+
+        const addItemBtn = document.getElementById('addItemBtn');
+        const removeItemBtn = document.getElementById('removeItemBtn');
+        const selectedItemLabel = document.getElementById('selectedItemLabel');
+
+        // CSS Code Display Elements
+        const cssColumns = document.getElementById('cssColumns');
+        const cssRows = document.getElementById('cssRows');
+        const cssGap = document.getElementById('cssGap');
+        const cssJustify = document.getElementById('cssJustify');
+        const cssAlign = document.getElementById('cssAlign');
+        const cssColSpan = document.getElementById('cssColSpan');
+        const cssRowSpan = document.getElementById('cssRowSpan');
+
+        let selectedItem = document.querySelector('.grid-item.selected');
+        let itemCounter = 6;
+
+        // Container Updates
+        function updateContainer() {
+            gridContainer.style.gridTemplateColumns = gridColumns.value;
+            gridContainer.style.gridTemplateRows = gridRows.value;
+            gridContainer.style.gap = `${gridGap.value}px`;
+            gridContainer.style.justifyItems = justifyItems.value;
+            gridContainer.style.alignItems = alignItems.value;
+
+            gapVal.textContent = `${gridGap.value}px`;
+
+            // Sync Code View
+            cssColumns.textContent = gridColumns.value;
+            cssRows.textContent = gridRows.value;
+            cssGap.textContent = `${gridGap.value}px`;
+            cssJustify.textContent = justifyItems.value;
+            cssAlign.textContent = alignItems.value;
+        }
+
+        // Item Specific Updates
+        function updateItemProps() {
+            if (!selectedItem) return;
+
+            selectedItem.style.gridColumn = gridColumnSpan.value;
+            selectedItem.style.gridRow = gridRowSpan.value;
+
+            // Sync Code View
+            cssColSpan.textContent = gridColumnSpan.value;
+            cssRowSpan.textContent = gridRowSpan.value;
+        }
+
+        // Selection Handler
+        function selectItem(item) {
+            document.querySelectorAll('.grid-item').forEach(el => el.classList.remove('selected'));
+            selectedItem = item;
+            selectedItem.classList.add('selected');
+
+            const itemId = selectedItem.getAttribute('data-id');
+            selectedItemLabel.textContent = `Item ${itemId}`;
+
+            // Load values into controls
+            gridColumnSpan.value = selectedItem.style.gridColumn || 'auto';
+            gridRowSpan.value = selectedItem.style.gridRow || 'auto';
+
+            updateItemProps();
+        }
+
+        // Event Listeners for Container
+        gridColumns.addEventListener('change', updateContainer);
+        gridRows.addEventListener('change', updateContainer);
+        gridGap.addEventListener('input', updateContainer);
+        justifyItems.addEventListener('change', updateContainer);
+        alignItems.addEventListener('change', updateContainer);
+
+        // Event Listeners for Item Controls
+        gridColumnSpan.addEventListener('change', updateItemProps);
+        gridRowSpan.addEventListener('change', updateItemProps);
+
+        // Add / Remove Item Functions
+        addItemBtn.addEventListener('click', () => {
+            itemCounter++;
+            const newItem = document.createElement('div');
+            newItem.className = 'grid-item';
+            newItem.setAttribute('data-id', itemCounter);
+            newItem.textContent = itemCounter;
+
+            newItem.addEventListener('click', () => selectItem(newItem));
+            gridContainer.appendChild(newItem);
+            selectItem(newItem);
+        });
+
+        removeItemBtn.addEventListener('click', () => {
+            const items = gridContainer.querySelectorAll('.grid-item');
+            if (items.length > 1) {
+                if (selectedItem) {
+                    selectedItem.remove();
+                } else {
+                    items[items.length - 1].remove();
+                }
+                const remaining = gridContainer.querySelectorAll('.grid-item');
+                if (remaining.length > 0) {
+                    selectItem(remaining[remaining.length - 1]);
+                }
+            }
+        });
+
+        // Attach click handlers to initial items
+        document.querySelectorAll('.grid-item').forEach(item => {
+            item.addEventListener('click', () => selectItem(item));
+        });
+
+        // Initialize setup
+        updateContainer();
+        if (selectedItem) selectItem(selectedItem);
+    </script>
+</body>
+</html>

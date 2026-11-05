@@ -9,15 +9,123 @@
 </head>
 <body>
 
-<div class="container-fluid p-5 bg-primary text-white text-center">
-  <h1>David Li</h1>
-  <p>Web passion!</p>
-  
+<!-- Header -->
+<div class="p-5 bg-primary text-white text-center">
+  <h1 class="mb-1">Andrew Gump</h1>
+  <p class="lead mb-0">Cybersecurity</p>
 </div>
-<div class="containe p-5 bg-primary text-white text-center">
 
-  <h2>Current position</h2>
-  <p> Professor at Indianatech</p>
+<div class="container my-5">
+
+  <!-- Contact & Current Position -->
+  <div class="row mb-5 text-center">
+    <div class="col-md-6 mb-3 mb-md-0">
+      <h2 class="h4">Current Position</h2>
+      <p class="mb-0">Systems Technician at Stone Computer</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="h4">Contact Me</h2>
+      <p class="mb-0">
+        (260) 433-9292<br>
+        andrewgumpwork@gmail.com
+      </p>
+    </div>
+  </div>
+
+  <!-- Professional Summary -->
+  <div class="mb-5">
+    <h2 class="h3 section-title">Professional Summary</h2>
+    <p>
+      Dedicated Systems Integrator specializing in network integration and hardware
+      troubleshooting. Successfully managed system upgrades, enhancing operational
+      effectiveness and minimizing downtime while collaborating with cross-functional
+      teams to ensure seamless technical support.
+    </p>
+  </div>
+
+  <!-- Skills -->
+  <div class="mb-5">
+    <h2 class="h3 section-title">Skills</h2>
+    <div class="row">
+      <div class="col-md-6">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Hardware and software installation</li>
+          <li class="list-group-item">Network integration</li>
+          <li class="list-group-item">System architecture</li>
+          <li class="list-group-item">Network troubleshooting</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Network security</li>
+          <li class="list-group-item">System integration</li>
+          <li class="list-group-item">System optimization</li>
+          <li class="list-group-item">Technical support</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Professional Experience -->
+  <div class="mb-5">
+    <h2 class="h3 section-title">Professional Experience</h2>
+    <h3 class="h5 mb-0">Military Intelligence Systems Maintainer / Systems Integrator</h3>
+    <h4 class="h6 text-muted">05/2020 to 05/2024</h4>
+    <ul>
+      <li>Managed system upgrades and installations, minimizing downtime while adhering to project timelines.</li>
+      <li>Enhanced system performance through thorough testing and troubleshooting of software, hardware, and network components, contributing to system reliability.</li>
+      <li>Collaborated with cross-functional teams to troubleshoot and resolve technical issues, ensuring minimal disruption to operations.</li>
+      <li>Integrated complex systems, improving operational effectiveness and mission readiness.</li>
+    </ul>
+  </div>
+
+  <!-- Education -->
+  <div class="mb-5">
+    <h2 class="h3 section-title">Education</h2>
+    <h3 class="h5 mb-0">Indiana Institute of Technology</h3>
+    <h4 class="h6 text-muted">Fort Wayne, IN</h4>
+    <p class="mb-1"><strong>Bachelor of Science</strong> — Cyber Security, 05/2028</p>
+    <ul>
+      <li>Dean's List (Spring 2026)</li>
+      <li>4.0 GPA</li>
+    </ul>
+  </div>
+
+  <!-- Certifications -->
+  <div class="mb-5">
+    <h2 class="h3 section-title">Certifications</h2>
+    <h3 class="h5 mb-0">CompTIA Security+ CE</h3>
+    <p class="text-muted">Expires 07/28/2027</p>
+  </div>
+
 </div>
+    <!-- Contact Me Form -->
+  <div class="mb-5">
+    <h2 class="h3 section-title">Contact Me</h2>
+    <form id="contactForm" class="mt-4">
+      <div class="mb-3">
+        <label for="fullName" class="form-label">Full Name</label>
+        <input type="text" class="form-control" id="fullName" name="fullName" placeholder="Enter your full name">
+      </div>
+      <div class="mb-3">
+        <label for="message" class="form-label">Message</label>
+        <textarea class="form-control" id="message" name="message" rows="4" placeholder="Enter your message"></textarea>
+      </div>
+      <button type="button" id="contactBtn" class="btn btn-primary">Contact Me</button>
+    </form>
+  </div>
+ 
+</div>
+ 
+<script>
+  document.getElementById('contactBtn').addEventListener('click', function() {
+    const fullName = document.getElementById('fullName').value;
+    const message = document.getElementById('message').value;
+ 
+    console.log('Guest Name:', fullName);
+    console.log('Message:', message);
+  });
+</script>
+
 </body>
 </html>

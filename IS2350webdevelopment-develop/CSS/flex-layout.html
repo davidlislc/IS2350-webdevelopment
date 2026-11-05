@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Flexbox Interactive Playground</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .playground-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            max-width: 1150px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Controls Panel */
+        .controls {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            flex: 1;
+            min-width: 320px;
+            max-width: 420px;
+        }
+
+        .control-section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .control-section h3 {
+            margin: 0 0 12px 0;
+            font-size: 15px;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .control-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        select, input[type="number"] {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            background-color: #fafafa;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            background-color: #3498db;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button.remove-btn {
+            background-color: #e74c3c;
+        }
+
+        button.remove-btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* Visualizer Panel */
+        .visualizer-wrapper {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            flex: 1.5;
+            min-width: 380px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .canvas-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .canvas-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        /* Flex Container Visual Area */
+        .flex-container {
+            background-color: #2c3e50;
+            border: 3px dashed #34495e;
+            border-radius: 8px;
+            min-height: 360px;
+            padding: 15px;
+            display: flex;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        /* Flex Items */
+        .flex-item {
+            background: linear-gradient(135deg, #e74c3c, #e67e22);
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 5px;
+            min-width: 60px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 2px solid transparent;
+        }
+
+        .flex-item.selected {
+            border-color: #f1c40f;
+            box-shadow: 0 0 12px rgba(241, 196, 15, 0.8);
+            transform: scale(1.03);
+        }
+
+        /* Code Output Area */
+        .code-output {
+            margin-top: 20px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .code-keyword { color: #569cd6; }
+        .code-prop { color: #9cdcfe; }
+        .code-val { color: #ce9178; }
+    </style>
+</head>
+<body>
+
+    <h1>CSS Flexbox Playground</h1>
+
+    <div class="playground-container">
+        
+        <!-- Controls Sidebar -->
+        <div class="controls">
+            
+            <!-- Container Controls -->
+            <div class="control-section">
+                <h3>Container Properties</h3>
+                
+                <div class="control-group">
+                    <label for="flexDirection">flex-direction</label>
+                    <select id="flexDirection">
+                        <option value="row" selected>row (default)</option>
+                        <option value="row-reverse">row-reverse</option>
+                        <option value="column">column</option>
+                        <option value="column-reverse">column-reverse</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="justifyContent">justify-content (Main Axis)</label>
+                    <select id="justifyContent">
+                        <option value="flex-start" selected>flex-start</option>
+                        <option value="flex-end">flex-end</option>
+                        <option value="center">center</option>
+                        <option value="space-between">space-between</option>
+                        <option value="space-around">space-around</option>
+                        <option value="space-evenly">space-evenly</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="alignItems">align-items (Cross Axis)</label>
+                    <select id="alignItems">
+                        <option value="stretch" selected>stretch</option>
+                        <option value="flex-start">flex-start</option>
+                        <option value="flex-end">flex-end</option>
+                        <option value="center">center</option>
+                        <option value="baseline">baseline</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="flexWrap">flex-wrap</label>
+                    <select id="flexWrap">
+                        <option value="nowrap" selected>nowrap</option>
+                        <option value="wrap">wrap</option>
+                        <option value="wrap-reverse">wrap-reverse</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="alignContent">align-content (Multi-line only)</label>
+                    <select id="alignContent">
+                        <option value="normal" selected>normal</option>
+                        <option value="flex-start">flex-start</option>
+                        <option value="flex-end">flex-end</option>
+                        <option value="center">center</option>
+                        <option value="space-between">space-between</option>
+                        <option value="space-around">space-around</option>
+                        <option value="stretch">stretch</option>
+                    </select>
+                </div>
+
+                <div class="btn-group">
+                    <button id="addItemBtn">+ Add Item</button>
+                    <button id="removeItemBtn" class="remove-btn">- Remove</button>
+                </div>
+            </div>
+
+            <!-- Item Specific Controls -->
+            <div class="control-section">
+                <h3>Selected Item Props (<span id="selectedItemLabel">Item 1</span>)</h3>
+                <p style="font-size: 11px; color: #777; margin-top: -8px;">Click any box on the right to select it.</p>
+
+                <div class="control-group">
+                    <label for="itemFlexGrow">flex-grow</label>
+                    <input type="number" id="itemFlexGrow" min="0" max="10" value="0">
+                </div>
+
+                <div class="control-group">
+                    <label for="itemFlexShrink">flex-shrink</label>
+                    <input type="number" id="itemFlexShrink" min="0" max="10" value="1">
+                </div>
+
+                <div class="control-group">
+                    <label for="itemAlignSelf">align-self</label>
+                    <select id="itemAlignSelf">
+                        <option value="auto" selected>auto</option>
+                        <option value="flex-start">flex-start</option>
+                        <option value="flex-end">flex-end</option>
+                        <option value="center">center</option>
+                        <option value="baseline">baseline</option>
+                        <option value="stretch">stretch</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Interactive Canvas -->
+        <div class="visualizer-wrapper">
+            <div class="canvas-header">
+                <h3>Flex Container Visualizer</h3>
+            </div>
+
+            <div id="flexContainer" class="flex-container">
+                <div class="flex-item selected" data-id="1">1</div>
+                <div class="flex-item" data-id="2">2</div>
+                <div class="flex-item" data-id="3">3</div>
+            </div>
+
+            <!-- Generated CSS View -->
+            <div class="code-output">
+                <div><span class="code-keyword">.container</span> {</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">display</span>: <span class="code-val">flex</span>;</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">flex-direction</span>: <span class="code-val" id="cssDir">row</span>;</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">justify-content</span>: <span class="code-val" id="cssJustify">flex-start</span>;</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">align-items</span>: <span class="code-val" id="cssAlign">stretch</span>;</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">flex-wrap</span>: <span class="code-val" id="cssWrap">nowrap</span>;</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">align-content</span>: <span class="code-val" id="cssAlignContent">normal</span>;</div>
+                <div>}</div>
+                <br>
+                <div><span class="code-keyword">.selected-item</span> {</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">flex-grow</span>: <span class="code-val" id="cssGrow">0</span>;</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">flex-shrink</span>: <span class="code-val" id="cssShrink">1</span>;</div>
+                <div>&nbsp;&nbsp;<span class="code-prop">align-self</span>: <span class="code-val" id="cssAlignSelf">auto</span>;</div>
+                <div>}</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // DOM Elements
+        const flexContainer = document.getElementById('flexContainer');
+        const flexDirection = document.getElementById('flexDirection');
+        const justifyContent = document.getElementById('justifyContent');
+        const alignItems = document.getElementById('alignItems');
+        const flexWrap = document.getElementById('flexWrap');
+        const alignContent = document.getElementById('alignContent');
+
+        const itemFlexGrow = document.getElementById('itemFlexGrow');
+        const itemFlexShrink = document.getElementById('itemFlexShrink');
+        const itemAlignSelf = document.getElementById('itemAlignSelf');
+
+        const addItemBtn = document.getElementById('addItemBtn');
+        const removeItemBtn = document.getElementById('removeItemBtn');
+        const selectedItemLabel = document.getElementById('selectedItemLabel');
+
+        // CSS Code Output Display Elements
+        const cssDir = document.getElementById('cssDir');
+        const cssJustify = document.getElementById('cssJustify');
+        const cssAlign = document.getElementById('cssAlign');
+        const cssWrap = document.getElementById('cssWrap');
+        const cssAlignContent = document.getElementById('cssAlignContent');
+        const cssGrow = document.getElementById('cssGrow');
+        const cssShrink = document.getElementById('cssShrink');
+        const cssAlignSelf = document.getElementById('cssAlignSelf');
+
+        let selectedItem = document.querySelector('.flex-item.selected');
+        let itemCounter = 3;
+
+        // Container Updates
+        function updateContainer() {
+            flexContainer.style.flexDirection = flexDirection.value;
+            flexContainer.style.justifyContent = justifyContent.value;
+            flexContainer.style.alignItems = alignItems.value;
+            flexContainer.style.flexWrap = flexWrap.value;
+            flexContainer.style.alignContent = alignContent.value;
+
+            // Sync Code View
+            cssDir.textContent = flexDirection.value;
+            cssJustify.textContent = justifyContent.value;
+            cssAlign.textContent = alignItems.value;
+            cssWrap.textContent = flexWrap.value;
+            cssAlignContent.textContent = alignContent.value;
+        }
+
+        // Item Specific Updates
+        function updateItemProps() {
+            if (!selectedItem) return;
+
+            selectedItem.style.flexGrow = itemFlexGrow.value;
+            selectedItem.style.flexShrink = itemFlexShrink.value;
+            selectedItem.style.alignSelf = itemAlignSelf.value;
+
+            // Sync Code View
+            cssGrow.textContent = itemFlexGrow.value;
+            cssShrink.textContent = itemFlexShrink.value;
+            cssAlignSelf.textContent = itemAlignSelf.value;
+        }
+
+        // Selection Handler
+        function selectItem(item) {
+            document.querySelectorAll('.flex-item').forEach(el => el.classList.remove('selected'));
+            selectedItem = item;
+            selectedItem.classList.add('selected');
+
+            const itemId = selectedItem.getAttribute('data-id');
+            selectedItemLabel.textContent = `Item ${itemId}`;
+
+            // Load values into controls
+            itemFlexGrow.value = selectedItem.style.flexGrow || 0;
+            itemFlexShrink.value = selectedItem.style.flexShrink || 1;
+            itemAlignSelf.value = selectedItem.style.alignSelf || 'auto';
+
+            updateItemProps();
+        }
+
+        // Event Listeners for Container
+        flexDirection.addEventListener('change', updateContainer);
+        justifyContent.addEventListener('change', updateContainer);
+        alignItems.addEventListener('change', updateContainer);
+        flexWrap.addEventListener('change', updateContainer);
+        alignContent.addEventListener('change', updateContainer);
+
+        // Event Listeners for Item Controls
+        itemFlexGrow.addEventListener('input', updateItemProps);
+        itemFlexShrink.addEventListener('input', updateItemProps);
+        itemAlignSelf.addEventListener('change', updateItemProps);
+
+        // Add / Remove Item Functions
+        addItemBtn.addEventListener('click', () => {
+            itemCounter++;
+            const newItem = document.createElement('div');
+            newItem.className = 'flex-item';
+            newItem.setAttribute('data-id', itemCounter);
+            newItem.textContent = itemCounter;
+
+            newItem.addEventListener('click', () => selectItem(newItem));
+            flexContainer.appendChild(newItem);
+            selectItem(newItem);
+        });
+
+        removeItemBtn.addEventListener('click', () => {
+            const items = flexContainer.querySelectorAll('.flex-item');
+            if (items.length > 1) {
+                if (selectedItem) {
+                    selectedItem.remove();
+                } else {
+                    items[items.length - 1].remove();
+                }
+                const remaining = flexContainer.querySelectorAll('.flex-item');
+                if (remaining.length > 0) {
+                    selectItem(remaining[remaining.length - 1]);
+                }
+            }
+        });
+
+        // Attach click handlers to initial items
+        document.querySelectorAll('.flex-item').forEach(item => {
+            item.addEventListener('click', () => selectItem(item));
+        });
+
+        // Initialize setup
+        updateContainer();
+        if (selectedItem) selectItem(selectedItem);
+    </script>
+</body>
+</html>

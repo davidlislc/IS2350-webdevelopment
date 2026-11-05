@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Portfolio & Blog</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="main.js" defer></script>
+</head>
+<body>
+
+    <!-- Header & Navigation -->
+    <header>
+        <h1>David Wayne</h1>
+        <p>Full-Stack Web Developer</p>
+        <nav>
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#blog">Blog</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <hr>
+
+    <!-- Main Content Area -->
+    <main>
+        
+        <!-- About Section -->
+        <section id="about">
+            <h2>About Me</h2>
+            <p>Hello! I am learning <strong>modern web development</strong>. My goal is to build <em>accessible</em> and <em>responsive</em> applications.</p>
+            <blockquote cite="https://www.w3.org/">
+                "The power of the Web is in its universality. Access by everyone regardless of disability is an essential aspect."
+            </blockquote>
+        </section>
+
+        <!-- Blog Section -->
+        <section id="blog">
+            <h2>Latest Post</h2>
+            <article>
+                <h3>Starting My Web Development Journey</h3>
+                <p>Published on <time datetime="2026-08-20">August 20, 2026</time></p>
+                <p>Learning HTML semantic structures is the first step toward mastering full-stack applications. <br>Here is an image representing web structure:</p>
+                <img src="https://via.placeholder.com/400x200" alt="Sample project preview graphic">
+            </article>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills">
+            <h2>Core Skills & Progress</h2>
+            <ul>
+                <li>HTML5 & CSS3</li>
+                <li>JavaScript (ES6+)</li>
+                <li>React & Node.js</li>
+            </ul>
+
+            <!-- Table Example -->
+            <h3>Weekly Learning Schedule</h3>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Week</th>
+                        <th>Topic</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Semantic HTML5</td>
+                        <td>Completed</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>CSS Layouts & Flexbox</td>
+                        <td>In Progress</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Contact Form Section -->
+        <section id="contact">
+            <h2>Get In Touch</h2>
+            <form action="/submit" method="POST">
+                <div>
+                    <label for="name">Name:</label><br>
+                    <input type="text" id="name" name="user_name" required placeholder="Jane Doe">
+                </div>
+                
+                <div>
+                    <label for="topic">Inquiry Type:</label><br>
+                    <select id="topic" name="user_topic">
+                        <option value="general">General</option>
+                        <option value="project">Project Collaboration</option>
+                        <option value="mentorship">Mentorship</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="message">Message:</label><br>
+                    <textarea id="message" name="user_message" rows="4" placeholder="Your message here..."></textarea>
+                </div>
+
+                <button type="submit">Send Message</button>
+            </form>
+        </section>
+
+    </main>
+
+    <hr>
+
+    <!-- Page Footer -->
+    <footer>
+        <p>&copy; 2026 Alex Taylor. Built with pure HTML5.</p>
+    </footer>
+
+</body>
+</html>

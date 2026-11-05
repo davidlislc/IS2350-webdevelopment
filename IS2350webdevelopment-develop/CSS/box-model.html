@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Box Model Calculator</title>
+    <style>
+        :root {
+            --margin-color: #f9cc9d;
+            --border-color: #fbec9d;
+            --padding-color: #c3ecb2;
+            --content-color: #9bbbe1;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .calculator-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            max-width: 1100px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Controls Panel */
+        .controls {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            flex: 1;
+            min-width: 320px;
+            max-width: 450px;
+        }
+
+        .control-group {
+            margin-bottom: 18px;
+        }
+
+        .control-group h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* Visualizer Panel */
+        .visualizer-wrapper {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            flex: 1.5;
+            min-width: 380px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: auto;
+        }
+
+        /* Box Model Layers */
+        .box-layer {
+            transition: all 0.15s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            position: relative;
+            font-weight: bold;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .margin-layer {
+            background-color: var(--margin-color);
+            border: 2px dashed #e09b53;
+        }
+
+        .border-layer {
+            background-color: var(--border-color);
+            border: 2px solid #d8be34;
+        }
+
+        .padding-layer {
+            background-color: var(--padding-color);
+            border: 2px dashed #73b35b;
+        }
+
+        .content-layer {
+            background-color: var(--content-color);
+            border: 2px solid #4a77aa;
+            color: white;
+            text-align: center;
+        }
+
+        .layer-label {
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        /* Calculations Summary Output */
+        .summary-box {
+            margin-top: 20px;
+            width: 100%;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .summary-box h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .math-breakdown {
+            font-family: monospace;
+            font-size: 13px;
+            color: #444;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>CSS Box Model Calculator</h1>
+
+    <div class="calculator-container">
+        
+        <div class="controls">
+            
+            <div class="control-group">
+                <h3>Sizing Mode</h3>
+                <label for="boxSizing">box-sizing property:</label>
+                <select id="boxSizing">
+                    <option value="content-box">content-box (Default)</option>
+                    <option value="border-box">border-box (Recommended)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <h3><span class="indicator" style="background: var(--content-color);"></span> Content Dimensions</h3>
+                <label>Width: <span id="val-width">200px</span></label>
+                <input type="range" id="width" min="100" max="300" value="200">
+                
+                <label>Height: <span id="val-height">100px</span></label>
+                <input type="range" id="height" min="50" max="200" value="100">
+            </div>
+
+            <div class="control-group">
+                <h3><span class="indicator" style="background: var(--padding-color);"></span> Padding</h3>
+                <label>Padding (All Sides): <span id="val-padding">20px</span></label>
+                <input type="range" id="padding" min="0" max="50" value="20">
+            </div>
+
+            <div class="control-group">
+                <h3><span class="indicator" style="background: var(--border-color);"></span> Border</h3>
+                <label>Border Width: <span id="val-border">10px</span></label>
+                <input type="range" id="border" min="0" max="30" value="10">
+            </div>
+
+            <div class="control-group">
+                <h3><span class="indicator" style="background: var(--margin-color);"></span> Margin</h3>
+                <label>Margin (All Sides): <span id="val-margin">20px</span></label>
+                <input type="range" id="margin" min="0" max="50" value="20">
+            </div>
+
+        </div>
+
+        <div class="visualizer-wrapper">
+            
+            <div id="marginBox" class="box-layer margin-layer">
+                <span class="layer-label">Margin</span>
+                
+                <div id="borderBox" class="box-layer border-layer">
+                    <span class="layer-label">Border</span>
+                    
+                    <div id="paddingBox" class="box-layer padding-layer">
+                        <span class="layer-label">Padding</span>
+                        
+                        <div id="contentBox" class="box-layer content-layer">
+                            <span class="layer-label" style="color: white;">Content</span>
+                            <span id="contentDimensionsDisplay">200 x 100</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-box">
+                <h3>Rendered Footprint Breakdown</h3>
+                <div class="math-breakdown">
+                    <strong>Total Rendered Width:</strong> <span id="totalWidth">0px</span><br>
+                    <span id="widthMathDetail" style="color: #666; font-size: 11px;"></span><br><br>
+                    <strong>Total Rendered Height:</strong> <span id="totalHeight">0px</span><br>
+                    <span id="heightMathDetail" style="color: #666; font-size: 11px;"></span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // DOM Elements
+        const inputs = {
+            width: document.getElementById('width'),
+            height: document.getElementById('height'),
+            padding: document.getElementById('padding'),
+            border: document.getElementById('border'),
+            margin: document.getElementById('margin'),
+            boxSizing: document.getElementById('boxSizing')
+        };
+
+        const displays = {
+            width: document.getElementById('val-width'),
+            height: document.getElementById('val-height'),
+            padding: document.getElementById('val-padding'),
+            border: document.getElementById('val-border'),
+            margin: document.getElementById('val-margin'),
+            contentDimensions: document.getElementById('contentDimensionsDisplay'),
+            totalWidth: document.getElementById('totalWidth'),
+            totalHeight: document.getElementById('totalHeight'),
+            widthMathDetail: document.getElementById('widthMathDetail'),
+            heightMathDetail: document.getElementById('heightMathDetail')
+        };
+
+        const layers = {
+            margin: document.getElementById('marginBox'),
+            border: document.getElementById('borderBox'),
+            padding: document.getElementById('paddingBox'),
+            content: document.getElementById('contentBox')
+        };
+
+        function updateBoxModel() {
+            // Get slider values
+            const w = parseInt(inputs.width.value);
+            const h = parseInt(inputs.height.value);
+            const p = parseInt(inputs.padding.value);
+            const b = parseInt(inputs.border.value);
+            const m = parseInt(inputs.margin.value);
+            const sizingMode = inputs.boxSizing.value;
+
+            // Update text labels
+            displays.width.textContent = `${w}px`;
+            displays.height.textContent = `${h}px`;
+            displays.padding.textContent = `${p}px`;
+            displays.border.textContent = `${b}px`;
+            displays.margin.textContent = `${m}px`;
+
+            let actualContentW, actualContentH, totalRenderedW, totalRenderedH;
+
+            if (sizingMode === 'content-box') {
+                actualContentW = w;
+                actualContentH = h;
+                totalRenderedW = w + (p * 2) + (b * 2) + (m * 2);
+                totalRenderedH = h + (p * 2) + (b * 2) + (m * 2);
+
+                displays.widthMathDetail.textContent = 
+                    `Width (${w}) + Padding (${p*2}) + Border (${b*2}) + Margin (${m*2})`;
+                displays.heightMathDetail.textContent = 
+                    `Height (${h}) + Padding (${p*2}) + Border (${b*2}) + Margin (${m*2})`;
+            } else {
+                // border-box logic
+                actualContentW = Math.max(0, w - (p * 2) - (b * 2));
+                actualContentH = Math.max(0, h - (p * 2) - (b * 2));
+                totalRenderedW = w + (m * 2);
+                totalRenderedH = h + (m * 2);
+
+                displays.widthMathDetail.textContent = 
+                    `CSS Width (${w}) [Content: ${actualContentW} + Padding: ${p*2} + Border: ${b*2}] + Margin (${m*2})`;
+                displays.heightMathDetail.textContent = 
+                    `CSS Height (${h}) [Content: ${actualContentH} + Padding: ${p*2} + Border: ${b*2}] + Margin (${m*2})`;
+            }
+
+            // Apply dimensions to visual layers
+            layers.content.style.width = `${actualContentW}px`;
+            layers.content.style.height = `${actualContentH}px`;
+            displays.contentDimensions.textContent = `${actualContentW} × ${actualContentH}`;
+
+            layers.padding.style.padding = `${p}px`;
+            layers.border.style.padding = `${b}px`;
+            layers.margin.style.padding = `${m}px`;
+
+            // Display overall calculations
+            displays.totalWidth.textContent = `${totalRenderedW}px`;
+            displays.totalHeight.textContent = `${totalRenderedH}px`;
+        }
+
+        // Add Event Listeners
+        Object.values(inputs).forEach(input => {
+            input.addEventListener('input', updateBoxModel);
+        });
+
+        // Initial setup run
+        updateBoxModel();
+    </script>
+</body>
+</html>
