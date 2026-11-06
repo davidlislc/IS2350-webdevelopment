@@ -12,17 +12,12 @@ const users = [
   { id: 1, username: 'user1', password: 'password1', role: 'user' }
 ];
 
-// Query the users table for a matching username and password
-const queryUser = (username, password) => {
-  return users.find(u => u.username === username && u.password === password);
-};
-
 // Login route - generate token
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
   // Find user
-  const user = queryUser(username, password);
+  const user = users.find(u => u.username === username && u.password === password);
 
   if (!user) {
     return res.status(401).json({ message: 'Invalid credentials' });

@@ -15,6 +15,7 @@ let con = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "root_password"
+  MYSQL_DATABASE: my_database
 });
 
 
@@ -22,28 +23,39 @@ let con = mysql.createConnection({
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
-  // Find user
-  const user = users.find(u => u.username === username && u.password === password);
   con.connect(function (err) {
     if (err) throw err;
     console.log("Connected!");
   });
 
-  if (!user) {
-    return res.status(401).json({ message: 'Invalid credentials' });
-  }
+  // Find user
+  con.query(
+    'SELECT id, username, role FROM users WHERE username = ? AND password = ?',
+    [username, password],
+    (err, results) => {
+      if (err) {
+        return res.status(500).json({ message: 'Database error' });
+      }
 
-  // Create payload for JWT
-  const payload = {
-    id: user.id,
-    username: user.username,
-    role: user.role
-  };
+      const user = results[0];
 
-  // Sign token
-  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+      if (!user) {
+        return res.status(401).json({ message: 'Invalid credentials' });
+      }
 
-  res.json({ message: 'Login successful', token });
+      // Create payload for JWT
+      const payload = {
+        id: user.id,
+        username: user.username,
+        role: user.role
+      };
+
+      // Sign token
+      const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+
+      res.json({ message: 'Login successful', token });
+    }
+  );
 });
 
 // Middleware for JWT verification
