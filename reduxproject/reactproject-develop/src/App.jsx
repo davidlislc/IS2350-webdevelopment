@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import AccessRequestDashboard from './components/AccessRequestDashboard'
 
 const LOGIN_URL = 'http://localhost:8080/login'
 
@@ -10,6 +11,10 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [token, setToken] = useState(() => localStorage.getItem('token'))
   const [message, setMessage] = useState('')
+  const [userInfo, setUserInfo] = useState(() => {
+    const stored = localStorage.getItem('userInfo')
+    return stored ? JSON.parse(stored) : null
+  })
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -26,6 +31,15 @@ function App() {
         throw new Error(data.message || 'Login failed')
       }
       localStorage.setItem('token', data.token)
+      // Store user info (in real app, decode JWT to get user details)
+      const user = {
+        id: 1,
+        username: username,
+        email: username + '@example.com',
+        role: username === 'admin' ? 'admin' : 'user'
+      }
+      localStorage.setItem('userInfo', JSON.stringify(user))
+      setUserInfo(user)
       setToken(data.token)
       setMessage(data.message)
       setPassword('')
@@ -38,16 +52,33 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('token')
+    localStorage.removeItem('userInfo')
     setToken(null)
+    setUserInfo(null)
     setMessage('')
   }
 
-  if (token) {
+  if (token && userInfo) {
     return (
-      <div className="login card shadow-sm p-4">
-        <h1 className="h3">{message || 'Logged in'}</h1>
-        <p className="token text-secondary">Token: {token}</p>
-        <button className="btn btn-outline-secondary" onClick={handleLogout}>Log out</button>
+      <div className="app-container">
+        <nav className="navbar navbar-dark bg-dark">
+          <div className="container-fluid">
+            <span className="navbar-brand mb-0 h1">Access Request System</span>
+            <div className="d-flex align-items-center gap-3">
+              <span className="text-light">Welcome, {userInfo.username}</span>
+              <button className="btn btn-outline-light btn-sm" onClick={handleLogout}>
+                Log out
+              </button>
+            </div>
+          </div>
+        </nav>
+        <div className="container-fluid mt-4">
+          <AccessRequestDashboard 
+            userRole={userInfo.role}
+            userId={userInfo.id}
+            userEmail={userInfo.email}
+          />
+        </div>
       </div>
     )
   }
@@ -65,6 +96,7 @@ function App() {
       </label>
       {error && <p className="alert alert-danger mb-0" role="alert">{error}</p>}
       <button className="btn btn-primary" type="submit" disabled={loading}>{loading ? 'Logging in...' : 'Login'}</button>
+      <small className="text-muted text-center mt-3">Demo: username=user1, password=password1 (or admin for admin role)</small>
     </form>
   )
 }
