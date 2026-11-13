@@ -30,7 +30,7 @@ let con = mysql.createConnection({
 // Login route - generate token
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
-const sql = 'SELECT id, username, role FROM users WHERE username = ? AND password = ?';
+  const sql = 'SELECT id, username, role FROM users WHERE username = ? AND password = ?';
   con.query(sql, [username, password], (err, results) => {
     if (err) {
       return res.status(500).json({ message: 'Error fetching user', error: err });
@@ -193,28 +193,28 @@ app.post('/api/access-request/:id/approve', authenticateJWT, (req, res) => {
     }
 
     // Update access_request status
-    con.query('UPDATE access_request SET status = ? WHERE id = ?', 
-              ['APPROVED', accessRequestId], (err) => {
-      if (err) {
-        return res.status(500).json({ message: 'Error updating access request', error: err });
-      }
-
-      // Create entry in request_process
-      const processQuery = `INSERT INTO request_process (access_request_id, isApproved, approver_id, approver_email, decidsion_time) 
-                            VALUES (?, ?, ?, ?, NOW())`;
-
-      con.query(processQuery, 
-                [accessRequestId, true, req.user.id, approverEmail], (err, result) => {
+    con.query('UPDATE access_request SET status = ? WHERE id = ?',
+      ['APPROVED', accessRequestId], (err) => {
         if (err) {
-          return res.status(500).json({ message: 'Error creating request process record', error: err });
+          return res.status(500).json({ message: 'Error updating access request', error: err });
         }
 
-        res.json({
-          message: 'Access request approved successfully',
-          request_process_id: result.insertId
-        });
+        // Create entry in request_process
+        const processQuery = `INSERT INTO request_process (access_request_id, isApproved, approver_id, approver_email, decidsion_time) 
+                            VALUES (?, ?, ?, ?, NOW())`;
+
+        con.query(processQuery,
+          [accessRequestId, true, req.user.id, approverEmail], (err, result) => {
+            if (err) {
+              return res.status(500).json({ message: 'Error creating request process record', error: err });
+            }
+
+            res.json({
+              message: 'Access request approved successfully',
+              request_process_id: result.insertId
+            });
+          });
       });
-    });
   });
 });
 
@@ -247,17 +247,17 @@ app.post('/api/access-request/:id/deny', authenticateJWT, (req, res) => {
       const processQuery = `INSERT INTO request_process (access_request_id, isApproved, approver_id, approver_email, decidsion_time) 
                             VALUES (?, ?, ?, ?, NOW())`;
 
-      con.query(processQuery, 
-                [accessRequestId, false, req.user.id, approver_email || ''], (err, result) => {
-        if (err) {
-          return res.status(500).json({ message: 'Error creating request process record', error: err });
-        }
+      con.query(processQuery,
+        [accessRequestId, false, req.user.id, approver_email || ''], (err, result) => {
+          if (err) {
+            return res.status(500).json({ message: 'Error creating request process record', error: err });
+          }
 
-        res.json({
-          message: 'Access request denied successfully',
-          request_process_id: result.insertId
+          res.json({
+            message: 'Access request denied successfully',
+            request_process_id: result.insertId
+          });
         });
-      });
     });
   });
 });
