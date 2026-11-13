@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import './App.css'
 import AccessRequestDashboard from './components/AccessRequestDashboard'
+import config from './config'
 
-const LOGIN_URL = 'http://localhost/login'
+const LOGIN_URL = config.loginUrl
 
 function App() {
   const [username, setUsername] = useState('')
