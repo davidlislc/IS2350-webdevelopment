@@ -1,0 +1,15 @@
+[Unit]
+Description=Access Request Management REST API Backend
+After=network.target mariadb.service
+[Service]
+User=davidli
+WorkingDirectory=/var/www/arm-backend
+ExecStart=/usr/bin/node jwt-mysql-prod.js
+Restart=always
+RestartSec=10
+Environment=NODE_ENV=production
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier= arm-backend
+[Install]
+WantedBy=multi-user.target
